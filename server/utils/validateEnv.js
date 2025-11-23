@@ -8,6 +8,7 @@ const requiredEnvVars = [
   "JWT_SECRET",
   "PORT",
   "FRONTEND_URL",
+  "GOOGLE_CLIENT_ID",
 ];
 
 const optionalEnvVars = {
@@ -91,4 +92,3 @@ export const validateEnv = () => {
 
   console.log("✅ Environment variables validated");
 };
-

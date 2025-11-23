@@ -305,12 +305,14 @@ export const verifyGoogleToken = asyncHandler(async (req, res, next) => {
       },
     });
   } catch (error) {
+    // Enhanced error logging
     logger.error("Google token verification error", {
       error: error.message,
       stack: error.stack,
       errorName: error.name,
       credentialLength: credential?.length,
-      clientId: process.env.GOOGLE_CLIENT_ID ? "Set" : "Not Set",
+      clientId: process.env.GOOGLE_CLIENT_ID ? process.env.GOOGLE_CLIENT_ID.substring(0, 20) + "..." : "Not Set",
+      clientIdLength: process.env.GOOGLE_CLIENT_ID?.length || 0,
     });
 
     // Provide more specific error messages
@@ -320,11 +322,19 @@ export const verifyGoogleToken = asyncHandler(async (req, res, next) => {
     if (error.message?.includes("Token used too early") || error.message?.includes("Token used too late")) {
       return next(new AppError("Google token expired or invalid", 401));
     }
-    if (error.message?.includes("Invalid audience")) {
-      return next(new AppError("Google token audience mismatch. Please check GOOGLE_CLIENT_ID matches frontend", 401));
+    if (error.message?.includes("Invalid audience") || error.message?.includes("audience mismatch") || error.message?.includes("Wrong recipient")) {
+      logger.error("Google Client ID mismatch or wrong recipient", {
+        serverClientId: process.env.GOOGLE_CLIENT_ID?.substring(0, 50),
+        error: error.message,
+        hint: process.env.GOOGLE_CLIENT_ID?.includes("your-google-client-id") ? "Using placeholder value - update server/.env with actual Client ID" : "Client ID mismatch between server and client",
+      });
+      return next(new AppError("Google token audience mismatch. Please check GOOGLE_CLIENT_ID in server/.env matches VITE_GOOGLE_CLIENT_ID in client/.env.local. Make sure you're using the ACTUAL Client ID, not the placeholder.", 401));
     }
     if (error.message?.includes("Token expired")) {
       return next(new AppError("Google token has expired. Please try again", 401));
+    }
+    if (error.message?.includes("Wrong number of segments")) {
+      return next(new AppError("Invalid Google token format", 400));
     }
 
     // Return detailed error in development, generic in production
