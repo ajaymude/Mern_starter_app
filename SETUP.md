@@ -36,7 +36,7 @@ Run the configuration script:
    copy env.example .env.local
    ```
 
-   (On Linux/Mac: `cp env.example .env.local`)
+   (On Linux/Mac: `cp env.example .env.local`) 
 
 3. **Edit environment files:**
 
