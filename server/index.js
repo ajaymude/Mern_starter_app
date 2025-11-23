@@ -95,4 +95,4 @@ process.on("SIGTERM", () => {
     logger.info("💥 Process terminated!");
     process.exit(0);
   });
-});
+}); 
