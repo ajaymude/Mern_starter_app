@@ -6,8 +6,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
@@ -64,12 +63,12 @@ class ErrorBoundary extends React.Component {
                 className="text-sm mb-6"
                 style={{ color: "var(--text-secondary)" }}
               >
-                We're sorry, but something unexpected happened. Please try
+                We&apos;re sorry, but something unexpected happened. Please try
                 refreshing the page.
               </p>
             </div>
 
-            {process.env.NODE_ENV === "development" && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details
                 className="mb-6 text-left p-4 rounded"
                 style={{

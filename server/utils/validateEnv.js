@@ -1,8 +1,3 @@
-/**
- * Validates environment variables on application startup
- * Fails fast if required variables are missing
- */
-
 const requiredEnvVars = [
   "MONGODB_URI",
   "JWT_SECRET",
@@ -37,28 +32,24 @@ export const validateEnv = () => {
   const missing = [];
   const warnings = [];
 
-  // Check required variables
   requiredEnvVars.forEach((varName) => {
     if (!process.env[varName]) {
       missing.push(varName);
     }
   });
 
-  // Check JWT_SECRET length
   if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
     warnings.push(
       "JWT_SECRET should be at least 32 characters long for security"
     );
   }
 
-  // Set defaults for optional variables
   Object.entries(optionalEnvVars).forEach(([key, defaultValue]) => {
     if (!process.env[key]) {
       process.env[key] = defaultValue;
     }
   });
 
-  // Fail if required variables are missing
   if (missing.length > 0) {
     console.error("❌ Missing required environment variables:");
     missing.forEach((varName) => {
@@ -68,7 +59,6 @@ export const validateEnv = () => {
     process.exit(1);
   }
 
-  // Warn about security issues
   if (warnings.length > 0) {
     console.warn("⚠️  Environment variable warnings:");
     warnings.forEach((warning) => {
@@ -76,7 +66,6 @@ export const validateEnv = () => {
     });
   }
 
-  // Warn about production settings
   if (process.env.NODE_ENV === "production") {
     if (process.env.CORS_ORIGIN === "*") {
       console.warn(

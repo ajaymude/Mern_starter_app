@@ -10,12 +10,9 @@ export const protect = asyncHandler(async (req, res, next) => {
   let token;
   const clientType = detectClient(req);
 
-  // For web clients, check cookies first
   if (clientType === "web" && req.cookies.token) {
     token = req.cookies.token;
-  }
-  // For mobile clients or if no cookie, check Authorization header
-  else if (
+  } else if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
@@ -31,11 +28,9 @@ export const protect = asyncHandler(async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Try to get user from cache first
     let user = await getCachedUserData(decoded.id);
 
     if (!user) {
-      // If not in cache, fetch from database
       user = await User.findById(decoded.id).select("-password");
 
       if (!user) {
@@ -47,7 +42,6 @@ export const protect = asyncHandler(async (req, res, next) => {
         );
       }
 
-      // Cache user data for 1 hour
       const userData = {
         id: user._id,
         name: user.name,
@@ -58,7 +52,6 @@ export const protect = asyncHandler(async (req, res, next) => {
       await cacheUserData(decoded.id, userData, 3600);
       req.user = user;
     } else {
-      // Convert cached data to Mongoose-like object
       req.user = {
         _id: user.id,
         id: user.id,

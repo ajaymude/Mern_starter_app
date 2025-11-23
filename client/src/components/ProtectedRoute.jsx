@@ -6,8 +6,6 @@ const ProtectedRoute = ({ children }) => {
     (state) => state.auth
   );
 
-  // Show loading state while checking authentication
-  // This prevents flash of login page when cookies are being verified
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -22,7 +20,6 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // If not authenticated and not loading, redirect to login
   if (!isAuthenticated && !user) {
     return <Navigate to="/login" replace />;
   }

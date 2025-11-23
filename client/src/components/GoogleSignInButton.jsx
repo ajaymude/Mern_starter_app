@@ -10,7 +10,6 @@ const GoogleSignInButton = ({ onCredential, onError }) => {
     const loadGoogleScript = () => {
       if (scriptLoaded.current) return;
 
-      // Check if script already exists
       if (document.querySelector('script[src*="accounts.google.com/gsi/client"]')) {
         scriptLoaded.current = true;
         initializeGoogleSignIn();
@@ -33,7 +32,6 @@ const GoogleSignInButton = ({ onCredential, onError }) => {
 
     const initializeGoogleSignIn = () => {
       if (!window.google || !buttonRef.current) {
-        // Retry after a short delay if google or buttonRef not ready
         setTimeout(() => {
           if (window.google && buttonRef.current) {
             initializeGoogleSignIn();
@@ -70,14 +68,12 @@ const GoogleSignInButton = ({ onCredential, onError }) => {
 
     const handleCredentialResponse = async (response) => {
       try {
-        // Validate response structure
         if (!response || !response.credential) {
           console.error("Invalid Google response:", response);
           if (onError) onError("Invalid response from Google");
           return;
         }
 
-        // Ensure credential is a string
         const credential = response.credential;
         if (typeof credential !== "string") {
           console.error("Credential is not a string:", typeof credential, credential);
@@ -85,7 +81,6 @@ const GoogleSignInButton = ({ onCredential, onError }) => {
           return;
         }
 
-        // Pass credential to parent component
         if (onCredential) {
           onCredential(credential);
         }
@@ -96,11 +91,6 @@ const GoogleSignInButton = ({ onCredential, onError }) => {
     };
 
     loadGoogleScript();
-
-    // Cleanup
-    return () => {
-      // Cleanup if needed
-    };
   }, [onCredential, onError, googleLogin]);
 
   return (

@@ -4,10 +4,7 @@ import dotenv from "dotenv";
 import logger from "./utils/logger.js";
 import { validateEnv } from "./utils/validateEnv.js";
 
-// Load environment variables
 dotenv.config();
-
-// Validate environment variables (fail fast if missing)
 validateEnv();
 
 const PORT = process.env.PORT;
@@ -23,7 +20,6 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-// Handle uncaught exceptions
 process.on("uncaughtException", (err) => {
   logger.error("UNCAUGHT EXCEPTION! 💥 Shutting down...", {
     error: err,
@@ -34,7 +30,6 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-// MongoDB connection options optimized for 10M+ daily users
 const mongooseOptions = {
   maxPoolSize: parseInt(process.env.MONGODB_MAX_POOL_SIZE || "100", 10),
   minPoolSize: parseInt(process.env.MONGODB_MIN_POOL_SIZE || "10", 10),
@@ -57,7 +52,6 @@ const mongooseOptions = {
   retryWrites: process.env.MONGODB_RETRY_WRITES !== "false",
 };
 
-// Connect to MongoDB
 mongoose
   .connect(MONGODB_URI, mongooseOptions)
   .then(() => {
@@ -83,7 +77,6 @@ const server = app.listen(PORT, () => {
   });
 });
 
-// Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
   logger.error("UNHANDLED REJECTION! 💥 Shutting down...", {
     error: err,
@@ -96,7 +89,6 @@ process.on("unhandledRejection", (err) => {
   });
 });
 
-// Handle SIGTERM
 process.on("SIGTERM", () => {
   logger.info("👋 SIGTERM RECEIVED. Shutting down gracefully");
   server.close(() => {

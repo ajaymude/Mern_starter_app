@@ -15,17 +15,12 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const handleLogout = async () => {
     try {
-      // Call logout API to clear cookies on server
       await logoutMutation().unwrap();
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if API call fails, clear local state
     } finally {
-      // Clear local state
       dispatch(logout());
-      // Navigate to login
       navigate("/login");
-      // Close sidebar
       onClose();
     }
   };
@@ -42,7 +37,6 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 dark:bg-black/80 z-40 transition-opacity duration-300"
@@ -50,7 +44,6 @@ const Sidebar = ({ isOpen, onClose }) => {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-full w-64 shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
@@ -58,7 +51,6 @@ const Sidebar = ({ isOpen, onClose }) => {
         style={{ backgroundColor: 'var(--bg-card)' }}
       >
         <div className="flex flex-col h-full">
-          {/* Sidebar Header */}
           <div 
             className="p-6 border-b"
             style={{ borderColor: 'var(--border-color)' }}
@@ -85,7 +77,6 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* User Info */}
           {isAuthenticated && (
             <div 
               className="p-4 border-b"
@@ -113,7 +104,6 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Navigation Menu */}
           <nav className="flex-1 overflow-y-auto p-4">
             {isAuthenticated ? (
               <ul className="space-y-2">
@@ -198,12 +188,10 @@ const Sidebar = ({ isOpen, onClose }) => {
             )}
           </nav>
 
-          {/* Sidebar Footer */}
           <div 
             className="p-4 border-t space-y-2"
             style={{ borderColor: 'var(--border-color)' }}
           >
-            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200"
@@ -217,7 +205,6 @@ const Sidebar = ({ isOpen, onClose }) => {
               </span>
             </button>
 
-            {/* Logout Button */}
             {isAuthenticated && (
               <button
                 onClick={handleLogout}

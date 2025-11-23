@@ -6,8 +6,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { detectClient } from "../utils/detectClient.js";
 import logger from "../utils/logger.js";
 
-// For ID token verification, we only need the client ID
-// OAuth2Client can be initialized with just the client ID for verifyIdToken
 const getGoogleClient = () => {
   if (!process.env.GOOGLE_CLIENT_ID) {
     throw new Error("GOOGLE_CLIENT_ID is not set in environment variables");
@@ -48,9 +46,6 @@ export const getGoogleAuthUrl = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Google OAuth Callback (for server-side flow)
-// @route   GET /api/auth/google/callback
-// @access  Public
 export const googleCallback = asyncHandler(async (req, res, next) => {
   const { code } = req.query;
 
@@ -90,11 +85,10 @@ export const googleCallback = asyncHandler(async (req, res, next) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Create new user
       user = await User.create({
         name: name || "Google User",
         email,
-        password: `google_${googleId}`, // Dummy password, won't be used
+        password: `google_${googleId}`,
         googleId,
         picture,
         isGoogleAuth: true,
@@ -146,8 +140,7 @@ export const googleCallback = asyncHandler(async (req, res, next) => {
       });
     }
 
-    // Redirect to frontend with token for mobile or success for web
-    if (clientType === "mobile") {
+      if (clientType === "mobile") {
       res.status(200).json({
         status: "success",
         data: {
@@ -162,7 +155,6 @@ export const googleCallback = asyncHandler(async (req, res, next) => {
         },
       });
     } else {
-      // For web, redirect to frontend with success
       const frontendUrl = process.env.FRONTEND_URL;
       
       if (!frontendUrl) {
@@ -180,9 +172,6 @@ export const googleCallback = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Verify Google Token (for client-side OAuth)
-// @route   POST /api/auth/google/verify
-// @access  Public
 export const verifyGoogleToken = asyncHandler(async (req, res, next) => {
   const { credential } = req.body;
 
@@ -264,12 +253,10 @@ export const verifyGoogleToken = asyncHandler(async (req, res, next) => {
       });
     }
 
-    // Generate tokens
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
     const clientType = detectClient(req);
 
-    // Set cookie for web clients
     if (clientType === "web") {
       const cookieOptions = {
         expires: new Date(
@@ -300,12 +287,10 @@ export const verifyGoogleToken = asyncHandler(async (req, res, next) => {
           picture: user.picture || null,
           createdAt: user.createdAt,
         },
-        // Return tokens for mobile
         ...(clientType === "mobile" && { token, refreshToken }),
       },
     });
   } catch (error) {
-    // Enhanced error logging
     logger.error("Google token verification error", {
       error: error.message,
       stack: error.stack,
@@ -315,7 +300,6 @@ export const verifyGoogleToken = asyncHandler(async (req, res, next) => {
       clientIdLength: process.env.GOOGLE_CLIENT_ID?.length || 0,
     });
 
-    // Provide more specific error messages
     if (error.message?.includes("Invalid token signature")) {
       return next(new AppError("Invalid Google token signature", 401));
     }
@@ -337,7 +321,6 @@ export const verifyGoogleToken = asyncHandler(async (req, res, next) => {
       return next(new AppError("Invalid Google token format", 400));
     }
 
-    // Return detailed error in development, generic in production
     const errorMessage = process.env.NODE_ENV === "development" 
       ? `Google authentication failed: ${error.message}` 
       : "Google authentication failed";

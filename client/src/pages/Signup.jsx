@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { useRegisterMutation, useGoogleLoginMutation } from "../store/api/authApi";
+import {
+  useRegisterMutation,
+  useGoogleLoginMutation,
+} from "../store/api/authApi";
 import { setCredentials } from "../store/slices/authSlice";
 import GoogleSignInButton from "../components/GoogleSignInButton";
 
@@ -19,26 +22,22 @@ const Signup = () => {
   const [register, { isLoading }] = useRegisterMutation();
   const [googleLogin] = useGoogleLoginMutation();
 
-  // Handle Google credential from Sign-In button
   const handleGoogleCredential = async (credential) => {
     try {
-      setError(""); // Clear any previous errors
-      
-      // Ensure credential is a string
+      setError("");
+
       if (!credential || typeof credential !== "string") {
         setError("Invalid Google credential received");
         return;
       }
-      
+
       const result = await googleLogin({ credential }).unwrap();
 
       if (result.status === "success") {
-        // For web: cookies are set automatically, user data is in response
-        // For mobile: tokens are in response
         dispatch(
           setCredentials({
             user: result.data.user,
-            token: result.data.token || null, // May be null for web (cookies used)
+            token: result.data.token || null,
             refreshToken: result.data.refreshToken || null,
           })
         );
@@ -79,12 +78,10 @@ const Signup = () => {
       }).unwrap();
 
       if (result.status === "success") {
-        // For web: cookies are set automatically, token is optional
-        // For mobile: token is in response
         dispatch(
           setCredentials({
             user: result.data.user,
-            token: result.data.token || null, // May be null for web (cookies used)
+            token: result.data.token || null,
             refreshToken: result.data.refreshToken || null,
           })
         );
@@ -97,22 +94,22 @@ const Signup = () => {
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-80px)] p-8">
-      <div 
+      <div
         className="p-10 rounded-lg shadow-md w-full max-w-md transition-colors duration-300"
-        style={{ backgroundColor: 'var(--bg-card)' }}
+        style={{ backgroundColor: "var(--bg-card)" }}
       >
-        <h2 
+        <h2
           className="mb-6 text-center text-2xl font-bold"
-          style={{ color: 'var(--text-heading)' }}
+          style={{ color: "var(--text-heading)" }}
         >
           Sign Up
         </h2>
         {error && (
-          <div 
+          <div
             className="p-3 rounded mb-4 text-center text-sm"
             style={{
-              backgroundColor: 'var(--color-danger-light)',
-              color: 'var(--text-error)',
+              backgroundColor: "var(--color-danger-light)",
+              color: "var(--text-error)",
             }}
           >
             {error}
@@ -123,7 +120,7 @@ const Signup = () => {
             <label
               htmlFor="name"
               className="block mb-2 font-medium text-sm"
-              style={{ color: 'var(--text-label)' }}
+              style={{ color: "var(--text-label)" }}
             >
               Name
             </label>
@@ -136,9 +133,9 @@ const Signup = () => {
               required
               className="w-full px-4 py-3 border rounded text-base transition-colors duration-300 focus:ring-2 focus:ring-primary/20 outline-none"
               style={{
-                borderColor: 'var(--border-color)',
-                backgroundColor: 'var(--bg-input)',
-                color: 'var(--text-input)',
+                borderColor: "var(--border-color)",
+                backgroundColor: "var(--bg-input)",
+                color: "var(--text-input)",
               }}
             />
           </div>
@@ -146,7 +143,7 @@ const Signup = () => {
             <label
               htmlFor="email"
               className="block mb-2 font-medium text-sm"
-              style={{ color: 'var(--text-label)' }}
+              style={{ color: "var(--text-label)" }}
             >
               Email
             </label>
@@ -159,9 +156,9 @@ const Signup = () => {
               required
               className="w-full px-4 py-3 border rounded text-base transition-colors duration-300 focus:ring-2 focus:ring-primary/20 outline-none"
               style={{
-                borderColor: 'var(--border-color)',
-                backgroundColor: 'var(--bg-input)',
-                color: 'var(--text-input)',
+                borderColor: "var(--border-color)",
+                backgroundColor: "var(--bg-input)",
+                color: "var(--text-input)",
               }}
             />
           </div>
@@ -169,7 +166,7 @@ const Signup = () => {
             <label
               htmlFor="password"
               className="block mb-2 font-medium text-sm"
-              style={{ color: 'var(--text-label)' }}
+              style={{ color: "var(--text-label)" }}
             >
               Password
             </label>
@@ -182,9 +179,9 @@ const Signup = () => {
               required
               className="w-full px-4 py-3 border rounded text-base transition-colors duration-300 focus:ring-2 focus:ring-primary/20 outline-none"
               style={{
-                borderColor: 'var(--border-color)',
-                backgroundColor: 'var(--bg-input)',
-                color: 'var(--text-input)',
+                borderColor: "var(--border-color)",
+                backgroundColor: "var(--bg-input)",
+                color: "var(--text-input)",
               }}
             />
           </div>
@@ -192,7 +189,7 @@ const Signup = () => {
             <label
               htmlFor="confirmPassword"
               className="block mb-2 font-medium text-sm"
-              style={{ color: 'var(--text-label)' }}
+              style={{ color: "var(--text-label)" }}
             >
               Confirm Password
             </label>
@@ -205,9 +202,9 @@ const Signup = () => {
               required
               className="w-full px-4 py-3 border rounded text-base transition-colors duration-300 focus:ring-2 focus:ring-primary/20 outline-none"
               style={{
-                borderColor: 'var(--border-color)',
-                backgroundColor: 'var(--bg-input)',
-                color: 'var(--text-input)',
+                borderColor: "var(--border-color)",
+                backgroundColor: "var(--bg-input)",
+                color: "var(--text-input)",
               }}
             />
           </div>
@@ -220,7 +217,6 @@ const Signup = () => {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="flex items-center my-6">
           <div
             className="flex-1 border-t"
@@ -238,20 +234,24 @@ const Signup = () => {
           ></div>
         </div>
 
-        {/* Google Sign-In Button */}
-        <GoogleSignInButton onCredential={handleGoogleCredential} onError={setError} />
+        <GoogleSignInButton
+          onCredential={handleGoogleCredential}
+          onError={setError}
+        />
 
-        <p 
+        <p
           className="text-center mt-6 text-sm"
-          style={{ color: 'var(--text-tertiary)' }}
+          style={{ color: "var(--text-tertiary)" }}
         >
           Already have an account?{" "}
           <Link
             to="/login"
             className="font-medium transition-colors duration-300"
-            style={{ color: 'var(--text-link)' }}
-            onMouseEnter={(e) => e.target.style.color = 'var(--text-link-hover)'}
-            onMouseLeave={(e) => e.target.style.color = 'var(--text-link)'}
+            style={{ color: "var(--text-link)" }}
+            onMouseEnter={(e) =>
+              (e.target.style.color = "var(--text-link-hover)")
+            }
+            onMouseLeave={(e) => (e.target.style.color = "var(--text-link)")}
           >
             Login
           </Link>
@@ -262,4 +262,3 @@ const Signup = () => {
 };
 
 export default Signup;
-

@@ -40,15 +40,11 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      // Call logout API to clear cookies on server
       await logoutMutation().unwrap();
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if API call fails, clear local state
     } finally {
-      // Clear local state
       dispatch(logout());
-      // Navigate to login
       navigate("/login");
     }
   };
@@ -65,9 +61,7 @@ const Navbar = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Left Section - Logo & Menu Button */}
             <div className="flex items-center gap-4">
-              {/* Mobile Menu Button */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
@@ -99,7 +93,6 @@ const Navbar = () => {
               </Link>
             </div>
 
-            {/* Right Section - Desktop Menu */}
             <div className="hidden lg:flex items-center gap-4">
               <button
                 onClick={toggleTheme}
@@ -141,7 +134,6 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile Right Section - Theme Toggle Only */}
             <div className="flex lg:hidden items-center gap-2">
               <button
                 onClick={toggleTheme}
@@ -155,7 +147,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Sidebar Component */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </>
   );

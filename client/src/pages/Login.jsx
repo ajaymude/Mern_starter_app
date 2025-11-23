@@ -17,12 +17,10 @@ const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
   const [googleLogin] = useGoogleLoginMutation();
 
-  // Handle Google credential from Sign-In button
   const handleGoogleCredential = async (credential) => {
     try {
-      setError(""); // Clear any previous errors
+      setError("");
 
-      // Ensure credential is a string
       if (!credential || typeof credential !== "string") {
         setError("Invalid Google credential received");
         return;
@@ -31,12 +29,10 @@ const Login = () => {
       const result = await googleLogin({ credential }).unwrap();
 
       if (result.status === "success") {
-        // For web: cookies are set automatically, user data is in response
-        // For mobile: tokens are in response
         dispatch(
           setCredentials({
             user: result.data.user,
-            token: result.data.token || null, // May be null for web (cookies used)
+            token: result.data.token || null,
             refreshToken: result.data.refreshToken || null,
           })
         );
@@ -62,12 +58,10 @@ const Login = () => {
     try {
       const result = await login(formData).unwrap();
       if (result.status === "success") {
-        // For web: cookies are set automatically, token is optional
-        // For mobile: token is in response
         dispatch(
           setCredentials({
             user: result.data.user,
-            token: result.data.token || null, // May be null for web (cookies used)
+            token: result.data.token || null,
             refreshToken: result.data.refreshToken || null,
           })
         );
@@ -159,7 +153,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="flex items-center my-6">
           <div
             className="flex-1 border-t"
@@ -177,7 +170,6 @@ const Login = () => {
           ></div>
         </div>
 
-        {/* Google Login Button */}
         <GoogleSignInButton
           onCredential={handleGoogleCredential}
           onError={setError}

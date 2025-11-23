@@ -11,26 +11,20 @@ import {
 } from "../middleware/cache.js";
 import logger from "../utils/logger.js";
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
 export const register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
 
-  // Check if user already exists
   const userExists = await User.findOne({ email });
   if (userExists) {
     return next(new AppError("User already exists with this email", 400));
   }
 
-  // Create user
   const user = await User.create({
     name,
     email,
     password,
   });
 
-  // Generate tokens
   const token = generateToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
   const clientType = detectClient(req);
@@ -41,7 +35,6 @@ export const register = asyncHandler(async (req, res, next) => {
     clientType,
   });
 
-  // Set cookie for web clients, return token for mobile
   if (clientType === "web") {
     const cookieOptions = {
       expires: new Date(
@@ -76,19 +69,14 @@ export const register = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Check if user exists and get password
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
     return next(new AppError("Invalid email or password", 401));
   }
 
-  // Check password
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     logger.warn(`Failed login attempt for email: ${email}`, {
@@ -98,7 +86,6 @@ export const login = asyncHandler(async (req, res, next) => {
     return next(new AppError("Invalid email or password", 401));
   }
 
-  // Generate tokens
   const token = generateToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
   const clientType = detectClient(req);
@@ -110,7 +97,6 @@ export const login = asyncHandler(async (req, res, next) => {
     clientType,
   });
 
-  // Cache user data after login
   const userData = {
     id: user._id,
     name: user.name,
@@ -120,7 +106,6 @@ export const login = asyncHandler(async (req, res, next) => {
   };
   await cacheUserData(user._id.toString(), userData, 3600);
 
-  // Set cookie for web clients, return token for mobile
   if (clientType === "web") {
     const cookieOptions = {
       expires: new Date(
@@ -155,11 +140,7 @@ export const login = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
 export const getMe = asyncHandler(async (req, res, next) => {
-  // Get user ID (handle both _id and id)
   const userId = req.user?.id || req.user?._id?.toString() || req.user?._id;
 
   if (!userId) {
@@ -169,7 +150,6 @@ export const getMe = asyncHandler(async (req, res, next) => {
   const userIdString = userId.toString();
 
   try {
-    // Try to get from cache first
     const cachedUser = await getCachedUserData(userIdString);
 
     if (cachedUser) {
@@ -181,7 +161,6 @@ export const getMe = asyncHandler(async (req, res, next) => {
       });
     }
 
-    // If not in cache, fetch from database
     const user = await User.findById(userIdString).select("-password");
 
     if (!user) {
@@ -196,7 +175,6 @@ export const getMe = asyncHandler(async (req, res, next) => {
       createdAt: user.createdAt,
     };
 
-    // Cache user data for 1 hour
     await cacheUserData(userIdString, userData, 3600);
 
     return res.status(200).json({
@@ -206,7 +184,6 @@ export const getMe = asyncHandler(async (req, res, next) => {
       },
     });
   } catch (error) {
-    // If cache operations fail, still try to get from database
     logger.error("Error in getMe", {
       error: error.message,
       userId: userIdString,
@@ -235,27 +212,21 @@ export const getMe = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Logout user
-// @route   POST /api/auth/logout
-// @access  Private
 export const logout = asyncHandler(async (req, res) => {
   const clientType = detectClient(req);
   const userId = req.user?.id || req.user?._id?.toString() || req.user?._id;
 
-  // Clear cookies for web clients - must match the exact options used when setting cookies
   if (clientType === "web") {
     const cookieOptions = {
-      expires: new Date(0), // Expire immediately
+      expires: new Date(0),
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      path: "/", // Ensure path matches
+      path: "/",
     };
 
     res.cookie("token", "", cookieOptions);
     res.cookie("refreshToken", "", cookieOptions);
-
-    // Also clear any other potential cookie names
     res.clearCookie("token", cookieOptions);
     res.clearCookie("refreshToken", cookieOptions);
   }
@@ -265,7 +236,6 @@ export const logout = asyncHandler(async (req, res) => {
     clientType,
   });
 
-  // Invalidate user cache on logout
   if (userId) {
     try {
       await invalidateUserCache(userId.toString());
@@ -283,14 +253,10 @@ export const logout = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Refresh token
-// @route   POST /api/auth/refresh
-// @access  Public
 export const refreshToken = asyncHandler(async (req, res, next) => {
   const clientType = detectClient(req);
   let refreshToken;
 
-  // Get refresh token from cookie (web) or body (mobile)
   if (clientType === "web") {
     refreshToken = req.cookies.refreshToken;
   } else {
@@ -312,11 +278,9 @@ export const refreshToken = asyncHandler(async (req, res, next) => {
       return next(new AppError("User not found", 404));
     }
 
-    // Generate new tokens
     const newToken = generateToken(user._id);
     const newRefreshToken = generateRefreshToken(user._id);
 
-    // Set cookies for web
     if (clientType === "web") {
       const cookieOptions = {
         expires: new Date(
@@ -341,7 +305,6 @@ export const refreshToken = asyncHandler(async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: {
-        // Return tokens for mobile
         ...(clientType === "mobile" && {
           token: newToken,
           refreshToken: newRefreshToken,
