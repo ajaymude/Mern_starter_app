@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   CSS VARIABLES - COLOR SYSTEM
+   Update these to change the entire theme
+   ============================================ */
+
+:root {
+  /* Primary Colors (Eye-friendly blue, less harsh) */
+  --color-primary: #3182ce;
+  --color-primary-hover: #2c5282;
+  --color-primary-light: #63b3ed;
+  --color-primary-dark: #2c5282;
+
+  /* Secondary Colors */
+  --color-secondary: #95a5a6;
+  --color-secondary-hover: #7f8c8d;
+  --color-secondary-light: #bdc3c7;
+  --color-secondary-dark: #5d6d7e;
+
+  /* Success Colors (Softer green) */
+  --color-success: #38a169;
+  --color-success-hover: #2f855a;
+  --color-success-light: #68d391;
+  --color-success-dark: #276749;
+
+  /* Danger Colors (Softer red, less aggressive) */
+  --color-danger: #e53e3e;
+  --color-danger-hover: #c53030;
+  --color-danger-light: #fc8181;
+  --color-danger-dark: #9b2c2c;
+
+  /* Warning Colors */
+  --color-warning: #f39c12;
+  --color-warning-hover: #d68910;
+  --color-warning-light: #f7dc6f;
+  --color-warning-dark: #b9770e;
+
+  /* Info Colors (Eye-friendly blue) */
+  --color-info: #3182ce;
+  --color-info-hover: #2c5282;
+  --color-info-light: #63b3ed;
+  --color-info-dark: #2c5282;
+
+  /* Background Colors - Light Theme (Eye-friendly soft whites) */
+  --bg-primary: #fafafa;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #f0f0f0;
+  --bg-navbar: #2c3e50;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-hover: #f0f0f0;
+
+  /* Text Colors - Light Theme (Softer, less harsh) */
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-tertiary: #718096;
+  --text-inverse: #ffffff;
+  --text-muted: #a0aec0;
+  --text-link: #3182ce;
+  --text-link-hover: #2c5282;
+  --text-error: #e53e3e;
+  --text-success: #38a169;
+
+  /* Additional text colors for light theme */
+  --text-heading: #1a202c;
+  --text-body: #2d3748;
+  --text-label: #4a5568;
+  --text-placeholder: #a0aec0;
+  --text-input: #2d3748;
+
+  /* Border Colors - Light Theme (Softer borders) */
+  --border-color: #e2e8f0;
+  --border-color-light: #edf2f7;
+  --border-color-dark: #cbd5e0;
+  --border-color-focus: #3182ce;
+
+  /* Gray Scale - Light Theme */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+}
+
+/* Dark Theme Variables - Eye-friendly Dark Mode */
+.dark {
+  /* Background Colors - Eye-friendly Dark (Not pure black, softer dark gray) */
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #0d1117;
+  --bg-navbar: #0d1117;
+  --bg-card: #161b22;
+  --bg-input: #0d1117;
+  --bg-hover: #21262d;
+
+  /* Text Colors - Dark Theme (Eye-friendly, not too bright) */
+  --text-primary: #e6edf3;
+  --text-secondary: #c9d1d9;
+  --text-tertiary: #8b949e;
+  --text-inverse: #0d1117;
+  --text-muted: #8b949e;
+  --text-link: #58a6ff;
+  --text-link-hover: #79c0ff;
+  --text-error: #f85149;
+  --text-success: #3fb950;
+
+  /* Additional text colors for better visibility (Softer, warmer tones) */
+  --text-heading: #f0f6fc;
+  --text-body: #e6edf3;
+  --text-label: #c9d1d9;
+  --text-placeholder: #8b949e;
+
+  /* Border Colors - Dark Theme (Subtle, eye-friendly borders) */
+  --border-color: #30363d;
+  --border-color-light: #21262d;
+  --border-color-dark: #484f58;
+  --border-color-focus: #58a6ff;
+
+  /* Gray Scale - Dark Theme (Eye-friendly progression) */
+  --gray-50: #0d1117;
+  --gray-100: #161b22;
+  --gray-200: #21262d;
+  --gray-300: #30363d;
+  --gray-400: #484f58;
+  --gray-500: #6e7681;
+  --gray-600: #8b949e;
+  --gray-700: #b1bac4;
+  --gray-800: #c9d1d9;
+  --gray-900: #f0f6fc;
+
+  /* Card and input specific colors for dark mode */
+  --bg-card-dark: #161b22;
+  --bg-input-dark: #0d1117;
+  --text-card-heading: #f0f6fc;
+  --text-card-body: #e6edf3;
+  --text-input: #e6edf3;
+  --text-label-dark: #c9d1d9;
+}
+
+/* Custom base styles */
+@layer base {
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  code {
+    @apply font-mono;
+  }
+
+  a {
+    @apply no-underline;
+  }
+
+  button {
+    @apply cursor-pointer outline-none;
+  }
+
+  input,
+  textarea {
+    @apply outline-none;
+  }
+}
