@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/slices/authSlice";
+import { useLogoutMutation } from "../store/api/authApi";
 import { useTheme } from "../contexts/ThemeContext";
 import Sidebar from "./Sidebar";
 
@@ -35,17 +36,19 @@ const Navbar = () => {
     };
   }, [sidebarOpen, isMobile]);
 
+  const [logoutMutation] = useLogoutMutation();
+
   const handleLogout = async () => {
     try {
       // Call logout API to clear cookies on server
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+      await logoutMutation().unwrap();
     } catch (error) {
       console.error("Logout error:", error);
+      // Even if API call fails, clear local state
     } finally {
+      // Clear local state
       dispatch(logout());
+      // Navigate to login
       navigate("/login");
     }
   };

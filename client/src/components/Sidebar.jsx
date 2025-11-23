@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/slices/authSlice";
+import { useLogoutMutation } from "../store/api/authApi";
 import { useTheme } from "../contexts/ThemeContext";
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -10,10 +11,23 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { toggleTheme, isDark } = useTheme();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
-    onClose();
+  const [logoutMutation] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      // Call logout API to clear cookies on server
+      await logoutMutation().unwrap();
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if API call fails, clear local state
+    } finally {
+      // Clear local state
+      dispatch(logout());
+      // Navigate to login
+      navigate("/login");
+      // Close sidebar
+      onClose();
+    }
   };
 
   const isActive = (path) => location.pathname === path;

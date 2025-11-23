@@ -240,31 +240,41 @@ export const getMe = asyncHandler(async (req, res, next) => {
 // @access  Private
 export const logout = asyncHandler(async (req, res) => {
   const clientType = detectClient(req);
+  const userId = req.user?.id || req.user?._id?.toString() || req.user?._id;
 
-  // Clear cookies for web clients
+  // Clear cookies for web clients - must match the exact options used when setting cookies
   if (clientType === "web") {
-    res.cookie("token", "", {
-      expires: new Date(0),
+    const cookieOptions = {
+      expires: new Date(0), // Expire immediately
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    });
-    res.cookie("refreshToken", "", {
-      expires: new Date(0),
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    });
+      path: "/", // Ensure path matches
+    };
+
+    res.cookie("token", "", cookieOptions);
+    res.cookie("refreshToken", "", cookieOptions);
+
+    // Also clear any other potential cookie names
+    res.clearCookie("token", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
   }
 
-  logger.info(`User logged out: ${req.user?.email}`, {
-    userId: req.user?.id,
+  logger.info(`User logged out: ${req.user?.email || "unknown"}`, {
+    userId: userId?.toString(),
     clientType,
   });
 
   // Invalidate user cache on logout
-  if (req.user?.id) {
-    await invalidateUserCache(req.user.id.toString());
+  if (userId) {
+    try {
+      await invalidateUserCache(userId.toString());
+    } catch (error) {
+      logger.error("Error invalidating user cache on logout", {
+        error: error.message,
+        userId: userId.toString(),
+      });
+    }
   }
 
   res.status(200).json({
