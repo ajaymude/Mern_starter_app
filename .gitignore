@@ -46,3 +46,8 @@ coverage/
 # Production
 *.pem
 
+# Scripts with secrets (do not commit)
+verify-google-config.ps1
+*google*.ps1
+*secret*.ps1
+
