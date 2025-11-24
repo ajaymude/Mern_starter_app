@@ -20,15 +20,28 @@ const Login = () => {
   const handleGoogleCredential = async (credential) => {
     try {
       setError("");
+      console.log("handleGoogleCredential called with credential:", {
+        hasCredential: !!credential,
+        credentialType: typeof credential,
+        credentialLength: credential?.length || 0,
+        credentialPreview: credential
+          ? `${credential.substring(0, 50)}...`
+          : "none",
+      });
 
       if (!credential || typeof credential !== "string") {
-        setError("Invalid Google credential received");
+        const errorMsg = "Invalid Google credential received";
+        console.error(errorMsg, { credential, type: typeof credential });
+        setError(errorMsg);
         return;
       }
 
+      console.log("Calling googleLogin API...");
       const result = await googleLogin({ credential }).unwrap();
+      console.log("Google login API response:", result);
 
       if (result.status === "success") {
+        console.log("Login successful, setting credentials and navigating...");
         dispatch(
           setCredentials({
             user: result.data.user,
@@ -37,9 +50,22 @@ const Login = () => {
           })
         );
         navigate("/dashboard");
+      } else {
+        console.warn("Login response status is not 'success':", result);
+        setError("Login response was not successful");
       }
     } catch (err) {
-      setError(err?.data?.message || "Google login failed. Please try again.");
+      console.error("Google login error:", {
+        error: err,
+        status: err?.status,
+        data: err?.data,
+        message: err?.data?.message || err?.message,
+      });
+      setError(
+        err?.data?.message ||
+          err?.message ||
+          "Google login failed. Please try again."
+      );
     }
   };
 

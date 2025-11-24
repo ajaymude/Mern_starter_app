@@ -7,13 +7,52 @@ import hpp from "hpp";
 export const securityHeaders = helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+      defaultSrc: [
+        "'self'",
+        "https://accounts.google.com",
+        "https://*.google.com",
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://accounts.google.com",
+        "https://fonts.googleapis.com",
+        "https://*.google.com",
+      ],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://accounts.google.com",
+        "https://apis.google.com",
+        "https://*.google.com",
+      ],
+      connectSrc: [
+        "'self'",
+        "https://accounts.google.com",
+        "https://oauth2.googleapis.com",
+        "https://www.googleapis.com",
+        "https://*.google.com",
+      ],
+      frameSrc: [
+        "'self'",
+        "https://accounts.google.com",
+        "https://*.google.com",
+      ],
+      childSrc: [
+        "'self'",
+        "https://accounts.google.com",
+        "https://*.google.com",
+        "blob:",
+      ],
+      imgSrc: ["'self'", "data:", "https:", "https://*.google.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'", "https://accounts.google.com"],
     },
   },
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
 });
 
 export const apiLimiter = rateLimit({

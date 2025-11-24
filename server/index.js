@@ -48,7 +48,10 @@ const mongooseOptions = {
   family: parseInt(process.env.MONGODB_FAMILY || "4", 10),
   readPreference: process.env.MONGODB_READ_PREFERENCE || "primary",
   w: process.env.MONGODB_W || "majority",
-  wtimeout: parseInt(process.env.MONGODB_WTIMEOUT || "5000", 10),
+  wtimeoutMS: parseInt(
+    process.env.MONGODB_WTIMEOUT_MS || process.env.MONGODB_WTIMEOUT || "5000",
+    10
+  ),
   retryWrites: process.env.MONGODB_RETRY_WRITES !== "false",
 };
 
@@ -95,4 +98,4 @@ process.on("SIGTERM", () => {
     logger.info("💥 Process terminated!");
     process.exit(0);
   });
-}); 
+});

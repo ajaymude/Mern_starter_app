@@ -16,10 +16,10 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Please provide a valid email",
       ],
-      index: true, // Index for faster email lookups
+      // Note: unique: true automatically creates an index, so we don't need index: true
     },
     password: {
       type: String,
@@ -31,8 +31,7 @@ const userSchema = new mongoose.Schema(
     },
     googleId: {
       type: String,
-      unique: true,
-      sparse: true, // Allows multiple null values
+      // unique and sparse are set in the explicit index below to avoid duplicate index warning
     },
     picture: {
       type: String,
@@ -48,9 +47,9 @@ const userSchema = new mongoose.Schema(
 );
 
 // Compound indexes for common query patterns (optimized for high traffic)
-userSchema.index({ email: 1 }); // Already unique, but explicit index
+// Note: email already has unique index from unique: true, so we don't create a duplicate
 userSchema.index({ createdAt: -1 }); // For sorting by creation date
-userSchema.index({ googleId: 1 }, { sparse: true }); // Index for Google auth lookups
+userSchema.index({ googleId: 1 }, { sparse: true, unique: true }); // Index for Google auth lookups
 userSchema.index({ email: 1, isGoogleAuth: 1 }); // Compound index for email + Google auth queries
 userSchema.index({ _id: 1, email: 1 }); // Compound index for user lookups with email
 
